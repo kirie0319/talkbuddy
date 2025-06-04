@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻訳チャットアプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .room-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .setup-screen {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .setup-screen h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-screen {
+            display: none;
+            height: 600px;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.own {
+            text-align: right;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .message.own .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.other .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .original-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .translated-text {
+            font-size: 14px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .message.own .translated-text {
+            opacity: 0.9;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .message-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗣️ 翻訳チャット</h1>
+            <div class="room-info" id="roomInfo">リアルタイム多言語コミュニケーション</div>
+        </div>
+
+        <!-- セットアップ画面 -->
+        <div class="setup-screen" id="setupScreen">
+            <h2>チャットを始めましょう</h2>
+            
+            <div class="room-actions">
+                <button class="btn btn-primary" onclick="createRoom()">新しいルーム作成</button>
+                <button class="btn btn-secondary" onclick="showJoinForm()">ルームに参加</button>
+            </div>
+
+            <div class="input-group hidden" id="joinForm">
+                <label for="roomIdInput">ルームID</label>
+                <input type="text" id="roomIdInput" placeholder="6桁のルームIDを入力" maxlength="6">
+                <button class="btn btn-primary" onclick="joinRoom()" style="margin-top: 10px;">参加</button>
+            </div>
+
+            <div class="input-group">
+                <label for="usernameInput">あなたの名前</label>
+                <input type="text" id="usernameInput" placeholder="名前を入力" value="ユーザー">
+            </div>
+
+            <div class="status hidden" id="statusMessage"></div>
+        </div>
+
+        <!-- チャット画面 -->
+        <div class="chat-screen" id="chatScreen">
+            <div class="messages" id="messages"></div>
+            <div class="input-area">
+                <form class="message-form" onsubmit="sendMessage(event)">
+                    <input type="text" class="message-input" id="messageInput" 
+                           placeholder="メッセージを入力...（自動翻訳されます）" required>
+                    <button type="submit" class="send-btn" id="sendBtn">送信</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRoomId = null;
+        let currentUsername = null;
+        let websocket = null;
+
+        // ルーム作成
+        async function createRoom() {
+            try {
+                showStatus('ルームを作成中...', 'success');
+                
+                const response = await fetch('/create_room', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ room_id: null })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentRoomId = data.room_id;
+                    showStatus(`ルーム ${currentRoomId} が作成されました！`, 'success');
+                    document.getElementById('roomIdInput').value = currentRoomId;
+                    showJoinForm();
+                } else {
+                    showStatus('ルーム作成に失敗しました', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+
+        // 参加フォーム表示
+        function showJoinForm() {
+            document.getElementById('joinForm').classList.remove('hidden');
+        }
+
+        // ルーム参加
+        async function joinRoom() {
+            const roomId = document.getElementById('roomIdInput').value.trim().toUpperCase();
+            const username = document.getElementById('usernameInput').value.trim();
+
+            if (!roomId || !username) {
+                showStatus('ルームIDと名前を入力してください', 'error');
+                return;
+            }
+
+            try {
+                showStatus('ルームに参加中...', 'success');
+                
+                const response = await fetch(`/join_room/${roomId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentRoomId = roomId;
+                    currentUsername = username;
+                    
+                    // チャット画面に切り替え
+                    document.getElementById('setupScreen').style.display = 'none';
+                    document.getElementById('chatScreen').style.display = 'flex';
+                    document.getElementById('roomInfo').textContent = `ルーム: ${roomId} | ${username}`;
+
+                    // メッセージ履歴を読み込み
+                    await loadMessages();
+
+                    // WebSocket接続
+                    connectWebSocket();
+
+                } else {
+                    showStatus('ルームが見つかりません', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+
+        // メッセージ履歴読み込み
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/get_messages/${currentRoomId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.innerHTML = '';
+
+                    data.messages.forEach(message => {
+                        displayMessage(message);
+                    });
+
+                    // 最新メッセージまでスクロール
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        // WebSocket接続
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            websocket = new WebSocket(`${protocol}//${window.location.host}/ws/${currentRoomId}`);
+
+            websocket.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                displayMessage(message);
+
+                // 最新メッセージまでスクロール
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            };
+
+            websocket.onclose = function() {
+                console.log('WebSocket connection closed');
+                // 再接続ロジックを追加可能
+            };
+
+            websocket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // メッセージ送信
+        async function sendMessage(event) {
+            event.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="loading"></div>';
+
+            try {
+                const response = await fetch('/send_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        room_id: currentRoomId,
+                        sender: currentUsername,
+                        message: message
+                    })
+                });
+
+                if (response.ok) {
+                    messageInput.value = '';
+                } else {
+                    alert('メッセージの送信に失敗しました');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('エラーが発生しました');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '送信';
+            }
+        }
+
+        // メッセージ表示
+        function displayMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            
+            const isOwn = message.sender === currentUsername;
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+
+            const timestamp = new Date(message.timestamp).toLocaleTimeString('ja-JP', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="original-text">${escapeHtml(message.original)}</div>
+                    <div class="translated-text">${escapeHtml(message.translated)}</div>
+                    <div class="timestamp">${timestamp} - ${escapeHtml(message.sender)}</div>
+                </div>
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+        }
+
+        // ステータス表示
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        // HTMLエスケープ
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Enterキーでメッセージ送信
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(e);
+            }
+        });
+
+        // ルームID入力時の自動大文字変換
+        document.getElementById('roomIdInput').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+websockets
+openai
+langdetect
+python-multipart
+aiofiles
+python-dotenv
