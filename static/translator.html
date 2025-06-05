@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻訳ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .back-link {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .language-selector {
+            background: white;
+            padding: 20px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .language-pair {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .language-select {
+            flex: 1;
+            text-align: center;
+        }
+
+        .language-select label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .language-select select {
+            width: 100%;
+            padding: 12px 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 32px;
+        }
+
+        .language-select select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .swap-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swap-btn:hover {
+            background: #5a6fd8;
+            transform: rotate(180deg);
+        }
+
+        .swap-btn:active {
+            transform: rotate(180deg) scale(0.95);
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #fafbfc;
+            min-height: 300px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.lang-a {
+            text-align: left;
+        }
+
+        .message.lang-b {
+            text-align: right;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 85%;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .message.lang-a .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .message.lang-b .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .original-text {
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .translated-text {
+            font-size: 14px;
+            opacity: 0.85;
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+            line-height: 1.3;
+        }
+
+        .message.lang-a .translated-text {
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .timestamp {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 6px;
+        }
+
+        .input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .input-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .voice-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 48px;
+        }
+
+        .voice-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.98);
+        }
+
+        .voice-btn.recording {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .message-form {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            resize: none;
+            min-height: 48px;
+            max-height: 120px;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 60px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            margin: 12px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #bbdefb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .welcome-message .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+
+        .welcome-message h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .welcome-message p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* モバイル最適化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .header {
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .language-selector {
+                padding: 16px;
+            }
+            
+            .language-pair {
+                gap: 8px;
+            }
+            
+            .swap-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .messages {
+                padding: 12px;
+            }
+            
+            .message-bubble {
+                max-width: 90%;
+                padding: 12px;
+            }
+            
+            .input-area {
+                padding: 12px;
+            }
+            
+            .input-controls {
+                gap: 8px;
+            }
+            
+            .voice-btn {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
+            
+            .message-input {
+                font-size: 16px; /* iOS zoom prevention */
+            }
+        }
+
+        /* タブレット最適化 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                max-width: 90%;
+            }
+            
+            .input-controls {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* ダークモード対応 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+            }
+            
+            .container {
+                background: #2d2d2d;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
+            
+            .language-selector {
+                background: #2d2d2d;
+                border-bottom-color: #404040;
+            }
+            
+            .language-select select {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .messages {
+                background: #252525;
+            }
+            
+            .message.lang-a .message-bubble {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .input-area {
+                background: #2d2d2d;
+                border-top-color: #404040;
+            }
+            
+            .message-input {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .voice-btn {
+                background: #3d3d3d;
+                border-color: #667eea;
+            }
+            
+            .welcome-message {
+                color: #ccc;
+            }
+            
+            .welcome-message h3 {
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-link">←</a>
+            <h1>🗣️ 翻訳ツール</h1>
+            <div class="header-subtitle">対面コミュニケーション</div>
+        </div>
+
+        <!-- 言語選択エリア -->
+        <div class="language-selector">
+            <div class="language-pair">
+                <div class="language-select">
+                    <label for="languageA">言語A</label>
+                    <select id="languageA">
+                        <option value="ja">🇯🇵 日本語</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="ko">🇰🇷 한국어</option>
+                        <option value="zh">🇨🇳 中文</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                    </select>
+                </div>
+
+                <button class="swap-btn" onclick="swapLanguages()" title="言語を入れ替え">⇄</button>
+
+                <div class="language-select">
+                    <label for="languageB">言語B</label>
+                    <select id="languageB">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="ja">🇯🇵 日本語</option>
+                        <option value="ko">🇰🇷 한국어</option>
+                        <option value="zh">🇨🇳 中文</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- チャットエリア -->
+        <div class="chat-area">
+            <div class="messages" id="messages">
+                <div class="welcome-message">
+                    <div class="icon">💬</div>
+                    <h3>翻訳を開始しましょう</h3>
+                    <p>音声入力またはテキスト入力で<br>リアルタイム翻訳が始まります</p>
+                </div>
+            </div>
+
+            <!-- 入力エリア -->
+            <div class="input-area">
+                <div class="input-controls">
+                    <button class="voice-btn" id="voiceBtnA" onclick="startVoiceInput('A')">
+                        🎤 <span id="langAName">日本語</span>
+                    </button>
+                    <button class="voice-btn" id="voiceBtnB" onclick="startVoiceInput('B')">
+                        🎤 <span id="langBName">English</span>
+                    </button>
+                </div>
+
+                <form class="message-form" onsubmit="sendMessage(event)">
+                    <input type="text" class="message-input" id="messageInput" 
+                           placeholder="メッセージを入力..." required>
+                    <button type="submit" class="send-btn" id="sendBtn">送信</button>
+                </form>
+
+                <div class="status hidden" id="statusMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let languageA = 'ja';
+        let languageB = 'en';
+        let currentRecognition = null;
+        let isRecording = false;
+        let hasMessages = false;
+
+        // 言語名のマッピング
+        const languageNames = {
+            'ja': '日本語',
+            'en': 'English',
+            'ko': '한국어',
+            'zh': '中文',
+            'es': 'Español',
+            'fr': 'Français',
+            'de': 'Deutsch'
+        };
+
+        // 音声認識の言語コード
+        const speechLangCodes = {
+            'ja': 'ja-JP',
+            'en': 'en-US',
+            'ko': 'ko-KR',
+            'zh': 'zh-CN',
+            'es': 'es-ES',
+            'fr': 'fr-FR',
+            'de': 'de-DE'
+        };
+
+        // ページ読み込み時の初期化
+        window.addEventListener('DOMContentLoaded', function() {
+            updateLanguageDisplay();
+            setupLanguageSelectors();
+            checkSpeechSupport();
+        });
+
+        // 言語選択の設定
+        function setupLanguageSelectors() {
+            const langASelect = document.getElementById('languageA');
+            const langBSelect = document.getElementById('languageB');
+
+            langASelect.addEventListener('change', function() {
+                languageA = this.value;
+                updateLanguageDisplay();
+            });
+
+            langBSelect.addEventListener('change', function() {
+                languageB = this.value;
+                updateLanguageDisplay();
+            });
+        }
+
+        // 言語表示の更新
+        function updateLanguageDisplay() {
+            document.getElementById('langAName').textContent = languageNames[languageA];
+            document.getElementById('langBName').textContent = languageNames[languageB];
+        }
+
+        // 言語の入れ替え
+        function swapLanguages() {
+            const temp = languageA;
+            languageA = languageB;
+            languageB = temp;
+
+            document.getElementById('languageA').value = languageA;
+            document.getElementById('languageB').value = languageB;
+            updateLanguageDisplay();
+
+            showStatus('言語を入れ替えました', 'success');
+        }
+
+        // 音声認識サポートチェック
+        function checkSpeechSupport() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showStatus('音声認識は利用できません', 'error');
+                document.getElementById('voiceBtnA').disabled = true;
+                document.getElementById('voiceBtnB').disabled = true;
+            }
+        }
+
+        // 音声入力開始
+        function startVoiceInput(lang) {
+            if (isRecording) {
+                stopVoiceInput();
+                return;
+            }
+
+            const targetLang = lang === 'A' ? languageA : languageB;
+            const speechLang = speechLangCodes[targetLang];
+
+            if (!speechLang) {
+                showStatus(`${languageNames[targetLang]}の音声認識は未対応です`, 'error');
+                return;
+            }
+
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                currentRecognition = new SpeechRecognition();
+
+                currentRecognition.lang = speechLang;
+                currentRecognition.continuous = false;
+                currentRecognition.interimResults = false;
+
+                const voiceBtn = document.getElementById(`voiceBtn${lang}`);
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = `🔴 録音中...`;
+                isRecording = true;
+
+                currentRecognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('messageInput').value = transcript;
+                    showStatus(`認識完了: ${transcript}`, 'success');
+                    
+                    // 自動的に翻訳を実行
+                    setTimeout(() => {
+                        translateAndDisplay(transcript, targetLang);
+                    }, 300);
+                };
+
+                currentRecognition.onerror = function(event) {
+                    showStatus(`音声認識エラー`, 'error');
+                    stopVoiceInput();
+                };
+
+                currentRecognition.onend = function() {
+                    stopVoiceInput();
+                };
+
+                currentRecognition.start();
+                showStatus(`${languageNames[targetLang]}で話してください`, 'info');
+
+            } catch (error) {
+                showStatus('音声認識を開始できませんでした', 'error');
+                console.error('Speech recognition error:', error);
+            }
+        }
+
+        // 音声入力停止
+        function stopVoiceInput() {
+            if (currentRecognition) {
+                currentRecognition.stop();
+                currentRecognition = null;
+            }
+
+            document.getElementById('voiceBtnA').classList.remove('recording');
+            document.getElementById('voiceBtnB').classList.remove('recording');
+            document.getElementById('voiceBtnA').innerHTML = `🎤 ${languageNames[languageA]}`;
+            document.getElementById('voiceBtnB').innerHTML = `🎤 ${languageNames[languageB]}`;
+            isRecording = false;
+        }
+
+        // メッセージ送信
+        async function sendMessage(event) {
+            event.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+
+            // 言語を自動検出して翻訳
+            await translateAndDisplay(message);
+            messageInput.value = '';
+        }
+
+        // 翻訳と表示
+        async function translateAndDisplay(text, sourceLang = null) {
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="loading"></div>';
+
+            try {
+                // ウェルカムメッセージを削除
+                if (!hasMessages) {
+                    const welcomeMsg = document.querySelector('.welcome-message');
+                    if (welcomeMsg) {
+                        welcomeMsg.remove();
+                        hasMessages = true;
+                    }
+                }
+
+                // 言語検出（sourceLangが指定されていない場合）
+                let detectedLang = sourceLang;
+                if (!detectedLang) {
+                    detectedLang = await detectLanguage(text);
+                }
+
+                // 翻訳先言語を決定
+                let targetLang;
+                let messageClass;
+                
+                if (detectedLang === languageA) {
+                    targetLang = languageB;
+                    messageClass = 'lang-a';
+                } else if (detectedLang === languageB) {
+                    targetLang = languageA;
+                    messageClass = 'lang-b';
+                } else {
+                    // どちらでもない場合は、言語Aとして扱う
+                    detectedLang = languageA;
+                    targetLang = languageB;
+                    messageClass = 'lang-a';
+                }
+
+                // 翻訳API呼び出し
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        source_lang: detectedLang,
+                        target_lang: targetLang
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayTranslationMessage(text, data.translated_text, detectedLang, targetLang, messageClass);
+                } else {
+                    showStatus('翻訳に失敗しました', 'error');
+                }
+
+            } catch (error) {
+                console.error('Translation error:', error);
+                showStatus('翻訳エラーが発生しました', 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '送信';
+            }
+        }
+
+        // 簡易言語検出
+        async function detectLanguage(text) {
+            // ひらがな・カタカナ・漢字が含まれていれば日本語
+            if (/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text)) {
+                return 'ja';
+            }
+            // ハングルが含まれていれば韓国語
+            if (/[\uAC00-\uD7AF]/.test(text)) {
+                return 'ko';
+            }
+            // 中国語の簡体字・繁体字
+            if (/[\u4E00-\u9FFF]/.test(text)) {
+                return 'zh';
+            }
+            // デフォルトは英語
+            return 'en';
+        }
+
+        // 翻訳メッセージ表示
+        function displayTranslationMessage(original, translated, sourceLang, targetLang, messageClass) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            
+            messageDiv.className = `message ${messageClass}`;
+
+            const timestamp = new Date().toLocaleTimeString('ja-JP', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="original-text">
+                        <strong>${languageNames[sourceLang]}:</strong> ${escapeHtml(original)}
+                    </div>
+                    <div class="translated-text">
+                        <strong>${languageNames[targetLang]}:</strong> ${escapeHtml(translated)}
+                    </div>
+                    <div class="timestamp">${timestamp}</div>
+                </div>
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // ステータス表示
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        // HTMLエスケープ
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Enterキーでメッセージ送信
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(e);
+            }
+        });
+
+        // タッチデバイス対応
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+    </script>
+</body>
+</html> 

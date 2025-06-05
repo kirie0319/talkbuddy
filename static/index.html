@@ -12,33 +12,36 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
         }
 
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
+            margin: 0 auto;
             overflow: hidden;
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
+            padding: 20px 16px;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
         }
 
         .room-info {
@@ -47,29 +50,37 @@
         }
 
         .setup-screen {
-            padding: 30px;
+            padding: 24px 16px;
             text-align: center;
+            flex: 1;
         }
 
         .setup-screen h2 {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: #333;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .room-actions {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .btn {
-            flex: 1;
-            padding: 12px 20px;
+            padding: 14px 16px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s ease;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-primary {
@@ -78,61 +89,119 @@
         }
 
         .btn-secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e9ecef;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .translator-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            width: 100%;
+            margin: 16px 0;
+        }
+
+        .translator-btn:hover {
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
 
         .input-group {
-            margin: 15px 0;
+            margin: 16px 0;
+            text-align: left;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            margin-bottom: 8px;
+            color: #333;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px;
+            padding: 14px 16px;
             border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 16px;
             transition: border-color 0.3s ease;
+            background: white;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .language-help-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 8px;
+            display: block;
+            line-height: 1.4;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 8px;
+            display: block;
+            line-height: 1.4;
         }
 
         .chat-screen {
             display: none;
-            height: 600px;
             flex-direction: column;
+            height: calc(100vh - 20px);
         }
 
         .messages {
             flex: 1;
-            padding: 20px;
+            padding: 16px;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: #fafbfc;
         }
 
         .message {
-            margin-bottom: 20px;
-            animation: fadeIn 0.3s ease;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -140,99 +209,139 @@
             text-align: right;
         }
 
+        .message.other {
+            text-align: left;
+        }
+
         .message-bubble {
             display: inline-block;
-            max-width: 80%;
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 85%;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: relative;
         }
 
         .message.own .message-bubble {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 6px;
         }
 
         .message.other .message-bubble {
             background: white;
             color: #333;
-            border-bottom-left-radius: 5px;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .message.own .message-bubble::after {
+            content: '自分';
+            position: absolute;
+            top: -8px;
+            right: 12px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 600;
         }
 
         .original-text {
             font-size: 16px;
+            line-height: 1.4;
             margin-bottom: 8px;
         }
 
         .translated-text {
             font-size: 14px;
-            opacity: 0.8;
+            opacity: 0.85;
             font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+            line-height: 1.3;
         }
 
-        .message.own .translated-text {
-            opacity: 0.9;
+        .message.other .translated-text {
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
 
         .timestamp {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.6;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .input-area {
-            padding: 20px;
+            padding: 16px;
             background: white;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid #f0f0f0;
         }
 
         .message-form {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: flex-end;
         }
 
         .message-input {
             flex: 1;
-            padding: 12px;
+            padding: 14px 16px;
             border: 2px solid #e9ecef;
-            border-radius: 25px;
+            border-radius: 24px;
             font-size: 16px;
             outline: none;
             transition: border-color 0.3s ease;
+            min-height: 48px;
         }
 
         .message-input:focus {
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .send-btn {
-            padding: 12px 20px;
+            padding: 14px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 24px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 500;
             transition: all 0.3s ease;
+            min-width: 60px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .send-btn:hover {
-            transform: scale(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
         }
 
         .send-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .status {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 10px;
+            margin: 12px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
             text-align: center;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .status.success {
@@ -253,10 +362,10 @@
 
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -264,6 +373,151 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .share-btn {
+            background: #6c757d;
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+            margin-bottom: 12px;
+            border-radius: 20px;
+        }
+
+        .share-btn:hover {
+            background: #5a6268;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        /* モバイル最適化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .header {
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .setup-screen {
+                padding: 20px 16px;
+            }
+            
+            .setup-screen h2 {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .room-actions {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .btn {
+                padding: 16px;
+                font-size: 16px;
+            }
+            
+            .input-group {
+                margin: 12px 0;
+            }
+            
+            .message-bubble {
+                max-width: 90%;
+                padding: 12px;
+            }
+            
+            .input-area {
+                padding: 12px;
+            }
+            
+            .message-input {
+                font-size: 16px; /* iOS zoom prevention */
+            }
+        }
+
+        /* タブレット最適化 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                max-width: 90%;
+            }
+            
+            .room-actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* ダークモード対応 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+            }
+            
+            .container {
+                background: #2d2d2d;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
+            
+            .setup-screen {
+                background: #2d2d2d;
+            }
+            
+            .setup-screen h2 {
+                color: white;
+            }
+            
+            .input-group label {
+                color: #ccc;
+            }
+            
+            .input-group input,
+            .input-group select {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .btn-secondary {
+                background: #3d3d3d;
+                border-color: #667eea;
+                color: #667eea;
+            }
+            
+            .messages {
+                background: #252525;
+            }
+            
+            .message.other .message-bubble {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .input-area {
+                background: #2d2d2d;
+                border-top-color: #404040;
+            }
+            
+            .message-input {
+                background: #3d3d3d;
+                border-color: #505050;
+                color: white;
+            }
+            
+            .language-help-text,
+            .help-text {
+                color: #ccc;
+            }
         }
     </style>
 </head>
@@ -278,20 +532,51 @@
         <div class="setup-screen" id="setupScreen">
             <h2>チャットを始めましょう</h2>
             
+            <!-- 言語選択セクション -->
+            <div class="input-group">
+                <label for="languageSelect">🌍 言語選択 / Language Selection</label>
+                <select id="languageSelect">
+                    <option value="ja">🇯🇵 日本語 (Japanese)</option>
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ko">🇰🇷 한국어 (Korean)</option>
+                    <option value="zh">🇨🇳 中文 (Chinese)</option>
+                    <option value="es">🇪🇸 Español (Spanish)</option>
+                    <option value="fr">🇫🇷 Français (French)</option>
+                    <option value="de">🇩🇪 Deutsch (German)</option>
+                </select>
+                <small class="language-help-text">
+                    💡 UIの表示言語とメッセージの翻訳先言語の両方に使用されます
+                </small>
+            </div>
+            
             <div class="room-actions">
                 <button class="btn btn-primary" onclick="createRoom()">新しいルーム作成</button>
                 <button class="btn btn-secondary" onclick="showJoinForm()">ルームに参加</button>
             </div>
 
+            <div class="input-group">
+                <a href="/translator" style="text-decoration: none;">
+                    <button class="btn translator-btn">
+                        🗣️ 翻訳ツールを使用
+                    </button>
+                </a>
+                <small class="help-text">
+                    💡 1台のデバイスで対面翻訳（音声入力対応）
+                </small>
+            </div>
+
             <div class="input-group hidden" id="joinForm">
                 <label for="roomIdInput">ルームID</label>
                 <input type="text" id="roomIdInput" placeholder="6桁のルームIDを入力" maxlength="6">
-                <button class="btn btn-primary" onclick="joinRoom()" style="margin-top: 10px;">参加</button>
+                <button class="btn btn-primary" onclick="joinRoom()" style="margin-top: 12px; width: 100%;">参加</button>
             </div>
 
             <div class="input-group">
                 <label for="usernameInput">あなたの名前</label>
-                <input type="text" id="usernameInput" placeholder="名前を入力" value="ユーザー">
+                <input type="text" id="usernameInput" placeholder="名前を入力" value="">
+                <small class="help-text">
+                    💡 URLパラメータでユーザーを指定可能: <code>?user=太郎</code>
+                </small>
             </div>
 
             <div class="status hidden" id="statusMessage"></div>
@@ -301,6 +586,11 @@
         <div class="chat-screen" id="chatScreen">
             <div class="messages" id="messages"></div>
             <div class="input-area">
+                <div style="text-align: center;">
+                    <button class="btn share-btn" onclick="shareRoomURL()">
+                        🔗 ルームURLを共有
+                    </button>
+                </div>
                 <form class="message-form" onsubmit="sendMessage(event)">
                     <input type="text" class="message-input" id="messageInput" 
                            placeholder="メッセージを入力...（自動翻訳されます）" required>
@@ -314,11 +604,406 @@
         let currentRoomId = null;
         let currentUsername = null;
         let websocket = null;
+        let selectedLanguage = 'ja'; // 選択された言語（UIと翻訳の両方に使用）
+
+        // 多言語対応のテキスト定義
+        const translations = {
+            ja: {
+                title: "🗣️ 翻訳チャット",
+                subtitle: "リアルタイム多言語コミュニケーション",
+                startChat: "チャットを始めましょう",
+                createRoom: "新しいルーム作成",
+                joinRoom: "ルームに参加",
+                roomId: "ルームID",
+                roomIdPlaceholder: "6桁のルームIDを入力",
+                join: "参加",
+                yourName: "あなたの名前",
+                namePlaceholder: "名前を入力",
+                urlParamHint: "URLパラメータでユーザーを指定可能: ?user=太郎",
+                shareRoom: "🔗 ルームURLを共有",
+                messagePlaceholder: "メッセージを入力...（自動翻訳されます）",
+                send: "送信",
+                creating: "ルームを作成中...",
+                roomCreated: "ルーム {room} が作成されました！",
+                joining: "ルームに参加中...",
+                roomNotFound: "ルームが見つかりません",
+                errorOccurred: "エラーが発生しました",
+                pleaseEnterRoomAndName: "ルームIDと名前を入力してください",
+                sendFailed: "メッセージの送信に失敗しました",
+                urlCopied: "ルームURLをクリップボードにコピーしました",
+                shareUrl: "以下のURLを共有してください:",
+                createRoomFailed: "ルーム作成に失敗しました",
+                roomLabel: "ルーム: {room} | あなた: {user}",
+                languageSelect: "言語選択",
+                selectLanguage: "言語を選択してください",
+                original: "原文",
+                translated: "翻訳"
+            },
+            en: {
+                title: "🗣️ Translation Chat",
+                subtitle: "Real-time multilingual communication",
+                startChat: "Let's start chatting",
+                createRoom: "Create New Room",
+                joinRoom: "Join Room",
+                roomId: "Room ID",
+                roomIdPlaceholder: "Enter 6-digit room ID",
+                join: "Join",
+                yourName: "Your Name",
+                namePlaceholder: "Enter your name",
+                urlParamHint: "You can specify user via URL parameter: ?user=John",
+                shareRoom: "🔗 Share Room URL",
+                messagePlaceholder: "Type a message... (auto-translated)",
+                send: "Send",
+                creating: "Creating room...",
+                roomCreated: "Room {room} has been created!",
+                joining: "Joining room...",
+                roomNotFound: "Room not found",
+                errorOccurred: "An error occurred",
+                pleaseEnterRoomAndName: "Please enter room ID and name",
+                sendFailed: "Failed to send message",
+                urlCopied: "Room URL copied to clipboard",
+                shareUrl: "Please share this URL:",
+                createRoomFailed: "Failed to create room",
+                roomLabel: "Room: {room} | You: {user}",
+                languageSelect: "Language Selection",
+                selectLanguage: "Please select your language",
+                original: "Original",
+                translated: "Translated"
+            },
+            ko: {
+                title: "🗣️ 번역 채팅",
+                subtitle: "실시간 다국어 커뮤니케이션",
+                startChat: "채팅을 시작해봅시다",
+                createRoom: "새 방 만들기",
+                joinRoom: "방 참가",
+                roomId: "방 ID",
+                roomIdPlaceholder: "6자리 방 ID를 입력하세요",
+                join: "참가",
+                yourName: "당신의 이름",
+                namePlaceholder: "이름을 입력하세요",
+                urlParamHint: "URL 매개변수로 사용자 지정 가능: ?user=철수",
+                shareRoom: "🔗 방 URL 공유",
+                messagePlaceholder: "메시지를 입력하세요... (자동 번역됩니다)",
+                send: "전송",
+                creating: "방을 만드는 중...",
+                roomCreated: "방 {room}이 생성되었습니다!",
+                joining: "방에 참가하는 중...",
+                roomNotFound: "방을 찾을 수 없습니다",
+                errorOccurred: "오류가 발생했습니다",
+                pleaseEnterRoomAndName: "방 ID와 이름을 입력해주세요",
+                sendFailed: "메시지 전송에 실패했습니다",
+                urlCopied: "방 URL이 클립보드에 복사되었습니다",
+                shareUrl: "다음 URL을 공유해주세요:",
+                createRoomFailed: "방 만들기에 실패했습니다",
+                roomLabel: "방: {room} | 당신: {user}",
+                languageSelect: "언어 선택",
+                selectLanguage: "언어를 선택해주세요",
+                original: "원문",
+                translated: "번역됨"
+            },
+            zh: {
+                title: "🗣️ 翻译聊天",
+                subtitle: "实时多语言交流",
+                startChat: "开始聊天吧",
+                createRoom: "创建新房间",
+                joinRoom: "加入房间",
+                roomId: "房间ID",
+                roomIdPlaceholder: "输入6位房间ID",
+                join: "加入",
+                yourName: "您的姓名",
+                namePlaceholder: "请输入姓名",
+                urlParamHint: "可通过URL参数指定用户: ?user=小明",
+                shareRoom: "🔗 分享房间URL",
+                messagePlaceholder: "输入消息...（自动翻译）",
+                send: "发送",
+                creating: "正在创建房间...",
+                roomCreated: "房间 {room} 已创建！",
+                joining: "正在加入房间...",
+                roomNotFound: "未找到房间",
+                errorOccurred: "发生错误",
+                pleaseEnterRoomAndName: "请输入房间ID和姓名",
+                sendFailed: "消息发送失败",
+                urlCopied: "房间URL已复制到剪贴板",
+                shareUrl: "请分享以下URL:",
+                createRoomFailed: "创建房间失败",
+                roomLabel: "房间: {room} | 您: {user}",
+                languageSelect: "语言选择",
+                selectLanguage: "请选择您的语言",
+                original: "原文",
+                translated: "翻译"
+            },
+            es: {
+                title: "🗣️ Chat de Traducción",
+                subtitle: "Comunicación multilingüe en tiempo real",
+                startChat: "Empecemos a chatear",
+                createRoom: "Crear Nueva Sala",
+                joinRoom: "Unirse a Sala",
+                roomId: "ID de Sala",
+                roomIdPlaceholder: "Ingrese ID de sala de 6 dígitos",
+                join: "Unirse",
+                yourName: "Su Nombre",
+                namePlaceholder: "Ingrese su nombre",
+                urlParamHint: "Puede especificar usuario via parámetro URL: ?user=Juan",
+                shareRoom: "🔗 Compartir URL de Sala",
+                messagePlaceholder: "Escriba un mensaje... (auto-traducido)",
+                send: "Enviar",
+                creating: "Creando sala...",
+                roomCreated: "¡Sala {room} ha sido creada!",
+                joining: "Uniéndose a sala...",
+                roomNotFound: "Sala no encontrada",
+                errorOccurred: "Ocurrió un error",
+                pleaseEnterRoomAndName: "Por favor ingrese ID de sala y nombre",
+                sendFailed: "Falló el envío del mensaje",
+                urlCopied: "URL de sala copiada al portapapeles",
+                shareUrl: "Por favor comparta esta URL:",
+                createRoomFailed: "Falló la creación de sala",
+                roomLabel: "Sala: {room} | Usted: {user}",
+                languageSelect: "Selección de Idioma",
+                selectLanguage: "Por favor seleccione su idioma",
+                original: "Original",
+                translated: "Traducido"
+            },
+            fr: {
+                title: "🗣️ Chat de Traduction",
+                subtitle: "Communication multilingue en temps réel",
+                startChat: "Commençons à chater",
+                createRoom: "Créer Nouvelle Salle",
+                joinRoom: "Rejoindre Salle",
+                roomId: "ID de Salle",
+                roomIdPlaceholder: "Entrez l'ID de salle à 6 chiffres",
+                join: "Rejoindre",
+                yourName: "Votre Nom",
+                namePlaceholder: "Entrez votre nom",
+                urlParamHint: "Vous pouvez spécifier l'utilisateur via paramètre URL: ?user=Jean",
+                shareRoom: "🔗 Partager URL de Salle",
+                messagePlaceholder: "Tapez un message... (auto-traduit)",
+                send: "Envoyer",
+                creating: "Création de salle...",
+                roomCreated: "Salle {room} a été créée!",
+                joining: "Rejoignant la salle...",
+                roomNotFound: "Salle non trouvée",
+                errorOccurred: "Une erreur s'est produite",
+                pleaseEnterRoomAndName: "Veuillez entrer l'ID de salle et le nom",
+                sendFailed: "Échec de l'envoi du message",
+                urlCopied: "URL de salle copiée dans le presse-papiers",
+                shareUrl: "Veuillez partager cette URL:",
+                createRoomFailed: "Échec de la création de salle",
+                roomLabel: "Salle: {room} | Vous: {user}",
+                languageSelect: "Sélection de Langue",
+                selectLanguage: "Veuillez sélectionner votre langue",
+                original: "Original",
+                translated: "Traduit"
+            },
+            de: {
+                title: "🗣️ Übersetzungs-Chat",
+                subtitle: "Mehrsprachige Echtzeitkommunikation",
+                startChat: "Lass uns chatten",
+                createRoom: "Neuen Raum erstellen",
+                joinRoom: "Raum beitreten",
+                roomId: "Raum-ID",
+                roomIdPlaceholder: "6-stellige Raum-ID eingeben",
+                join: "Beitreten",
+                yourName: "Ihr Name",
+                namePlaceholder: "Namen eingeben",
+                urlParamHint: "Sie können Benutzer über URL-Parameter angeben: ?user=Hans",
+                shareRoom: "🔗 Raum-URL teilen",
+                messagePlaceholder: "Nachricht eingeben... (auto-übersetzt)",
+                send: "Senden",
+                creating: "Raum wird erstellt...",
+                roomCreated: "Raum {room} wurde erstellt!",
+                joining: "Raum wird betreten...",
+                roomNotFound: "Raum nicht gefunden",
+                errorOccurred: "Ein Fehler ist aufgetreten",
+                pleaseEnterRoomAndName: "Bitte Raum-ID und Name eingeben",
+                sendFailed: "Nachrichtensendung fehlgeschlagen",
+                urlCopied: "Raum-URL in Zwischenablage kopiert",
+                shareUrl: "Bitte teilen Sie diese URL:",
+                createRoomFailed: "Raumerstellung fehlgeschlagen",
+                roomLabel: "Raum: {room} | Sie: {user}",
+                languageSelect: "Sprachauswahl",
+                selectLanguage: "Bitte wählen Sie Ihre Sprache",
+                original: "Original",
+                translated: "Übersetzt"
+            }
+        };
+
+        // テキストを翻訳する関数
+        function t(key, params = {}) {
+            let text = translations[selectedLanguage]?.[key] || translations['en'][key] || key;
+            
+            // パラメータ置換
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+            
+            return text;
+        }
+
+        // 言語選択画面を表示（簡略化版）
+        function showLanguageSelection() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            
+            // URLパラメータから言語設定を読み込み
+            if (langParam && translations[langParam]) {
+                selectedLanguage = langParam;
+            } else {
+                // ブラウザの言語設定を確認
+                const browserLang = navigator.language.split('-')[0];
+                if (translations[browserLang]) {
+                    selectedLanguage = browserLang;
+                }
+            }
+            
+            // メイン画面の言語選択プルダウンを設定
+            setupLanguageSelectors();
+            updateLanguage();
+        }
+
+        // 言語選択プルダウンの設定と イベントリスナーの追加
+        function setupLanguageSelectors() {
+            const languageSelect = document.getElementById('languageSelect');
+            
+            if (languageSelect) {
+                // 現在の選択状態を反映
+                languageSelect.value = selectedLanguage;
+                
+                // 言語変更時のリアルタイム更新
+                languageSelect.addEventListener('change', function() {
+                    selectedLanguage = this.value;
+                    updateLanguage();
+                    updateURL();
+                    console.log(`Language changed to: ${selectedLanguage}`);
+                });
+            }
+        }
+
+        // UIの言語を更新（改良版）
+        function updateLanguage() {
+            // 基本的なUI要素の更新
+            if (document.querySelector('.header h1')) {
+                document.querySelector('.header h1').textContent = t('title');
+            }
+            
+            if (document.getElementById('roomInfo') && !currentRoomId) {
+                document.getElementById('roomInfo').textContent = t('subtitle');
+            }
+            
+            // セットアップ画面の更新
+            const setupTitle = document.querySelector('.setup-screen h2');
+            if (setupTitle) setupTitle.textContent = t('startChat');
+            
+            const createBtn = document.querySelector('.btn-primary');
+            if (createBtn && createBtn.onclick && createBtn.onclick.toString().includes('createRoom')) {
+                createBtn.textContent = t('createRoom');
+            }
+            
+            const joinBtn = document.querySelector('.btn-secondary');
+            if (joinBtn && joinBtn.onclick && joinBtn.onclick.toString().includes('showJoinForm')) {
+                joinBtn.textContent = t('joinRoom');
+            }
+            
+            // フォーム要素の更新
+            const roomIdLabel = document.querySelector('label[for="roomIdInput"]');
+            if (roomIdLabel) roomIdLabel.textContent = t('roomId');
+            
+            const roomIdInput = document.getElementById('roomIdInput');
+            if (roomIdInput) roomIdInput.placeholder = t('roomIdPlaceholder');
+            
+            const usernameLabel = document.querySelector('label[for="usernameInput"]');
+            if (usernameLabel) usernameLabel.textContent = t('yourName');
+            
+            const usernameInput = document.getElementById('usernameInput');
+            if (usernameInput && !usernameInput.disabled) {
+                usernameInput.placeholder = t('namePlaceholder');
+            }
+            
+            // 参加ボタンの更新
+            const joinRoomBtn = document.querySelector('#joinForm .btn-primary');
+            if (joinRoomBtn) joinRoomBtn.textContent = t('join');
+            
+            // チャット画面のボタン更新
+            const shareButton = document.querySelector('[onclick="shareRoomURL()"]');
+            if (shareButton) shareButton.textContent = t('shareRoom');
+            
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) messageInput.placeholder = t('messagePlaceholder');
+            
+            const sendButton = document.getElementById('sendBtn');
+            if (sendButton && sendButton.textContent !== '<div class="loading"></div>') {
+                sendButton.textContent = t('send');
+            }
+            
+            // 言語選択プルダウンのラベル更新
+            updateLanguageLabels();
+        }
+
+        // 言語選択プルダウンのラベルを更新
+        function updateLanguageLabels() {
+            const langLabel = document.querySelector('label[for="languageSelect"]');
+            if (langLabel) {
+                langLabel.textContent = `🌍 ${t('languageSelect')} / Language Selection`;
+            }
+            
+            // 説明文の更新
+            const helpText = document.querySelector('.language-help-text');
+            if (helpText) {
+                if (selectedLanguage === 'ja') {
+                    helpText.innerHTML = '💡 UIの表示言語とメッセージの翻訳先言語の両方に使用されます';
+                } else if (selectedLanguage === 'en') {
+                    helpText.innerHTML = '💡 Used for both UI display language and message translation target language';
+                } else if (selectedLanguage === 'ko') {
+                    helpText.innerHTML = '💡 UI 표시 언어와 메시지 번역 대상 언어로 모두 사용됩니다';
+                } else if (selectedLanguage === 'zh') {
+                    helpText.innerHTML = '💡 用于UI显示语言和消息翻译目标语言';
+                } else if (selectedLanguage === 'es') {
+                    helpText.innerHTML = '💡 Se usa tanto para el idioma de visualización de la UI como para el idioma de destino de traducción de mensajes';
+                } else if (selectedLanguage === 'fr') {
+                    helpText.innerHTML = '💡 Utilisé à la fois pour la langue d\'affichage de l\'interface utilisateur et la langue cible de traduction des messages';
+                } else if (selectedLanguage === 'de') {
+                    helpText.innerHTML = '💡 Wird sowohl für die UI-Anzeigesprache als auch für die Zielsprache der Nachrichtenübersetzung verwendet';
+                }
+            }
+        }
+
+        // ページ読み込み時の初期化
+        window.addEventListener('DOMContentLoaded', function() {
+            showLanguageSelection(); // 言語設定を初期化（専用画面は表示しない）
+            initializeUser();
+            autoJoinFromURL();
+        });
+
+        // ページ読み込み時にユーザーIDを設定
+        function initializeUser() {
+            const userId = getUserIdFromURL();
+            const usernameInput = document.getElementById('usernameInput');
+            
+            if (userId) {
+                usernameInput.value = userId;
+                // URLでユーザーが指定されている場合、入力フィールドを無効化
+                usernameInput.disabled = true;
+                usernameInput.style.backgroundColor = '#f0f0f0';
+                
+                // ヘッダーにユーザー情報を表示
+                const roomInfo = document.getElementById('roomInfo');
+                roomInfo.textContent = `${t('subtitle')} | ${userId}`;
+            }
+            
+            // 言語設定情報をコンソールに表示
+            console.log(`Current Language Settings - UI: ${selectedLanguage}`);
+        }
+
+        // URLパラメータからユーザーIDを取得
+        function getUserIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user');
+            return userId;
+        }
 
         // ルーム作成
         async function createRoom() {
             try {
-                showStatus('ルームを作成中...', 'success');
+                showStatus(t('creating'), 'success');
                 
                 const response = await fetch('/create_room', {
                     method: 'POST',
@@ -332,15 +1017,53 @@
                 
                 if (response.ok) {
                     currentRoomId = data.room_id;
-                    showStatus(`ルーム ${currentRoomId} が作成されました！`, 'success');
+                    showStatus(t('roomCreated', { room: currentRoomId }), 'success');
                     document.getElementById('roomIdInput').value = currentRoomId;
                     showJoinForm();
+                    
+                    // URLにルームIDを追加
+                    updateURL();
                 } else {
-                    showStatus('ルーム作成に失敗しました', 'error');
+                    showStatus(t('createRoomFailed'), 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showStatus('エラーが発生しました', 'error');
+                showStatus(t('errorOccurred'), 'error');
+            }
+        }
+
+        // URLを更新してユーザーIDとルームIDを保持
+        function updateURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = getUserIdFromURL();
+            
+            if (userId) {
+                urlParams.set('user', userId);
+            }
+            if (currentRoomId) {
+                urlParams.set('room', currentRoomId);
+            }
+            if (selectedLanguage) {
+                urlParams.set('lang', selectedLanguage);
+            }
+            
+            const newURL = window.location.pathname + '?' + urlParams.toString();
+            window.history.replaceState({}, '', newURL);
+        }
+
+        // URLからルームIDを取得して自動参加
+        function autoJoinFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get('room');
+            const userId = getUserIdFromURL();
+            
+            if (roomId && userId) {
+                document.getElementById('roomIdInput').value = roomId;
+                showJoinForm();
+                // 言語設定が完了した後に自動的にルームに参加
+                setTimeout(() => {
+                    joinRoom();
+                }, 1000); // setupLanguageSelectorsの処理を待つ
             }
         }
 
@@ -355,14 +1078,24 @@
             const username = document.getElementById('usernameInput').value.trim();
 
             if (!roomId || !username) {
-                showStatus('ルームIDと名前を入力してください', 'error');
+                showStatus(t('pleaseEnterRoomAndName'), 'error');
                 return;
             }
 
             try {
-                showStatus('ルームに参加中...', 'success');
+                showStatus(t('joining'), 'success');
                 
-                const response = await fetch(`/join_room/${roomId}`);
+                const response = await fetch(`/join_room/${roomId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        user_language: selectedLanguage
+                    })
+                });
+                
                 const data = await response.json();
 
                 if (response.ok) {
@@ -372,7 +1105,17 @@
                     // チャット画面に切り替え
                     document.getElementById('setupScreen').style.display = 'none';
                     document.getElementById('chatScreen').style.display = 'flex';
-                    document.getElementById('roomInfo').textContent = `ルーム: ${roomId} | ${username}`;
+                    
+                    // 言語情報も含めてヘッダー情報を更新
+                    document.getElementById('roomInfo').textContent = t('roomLabel', { room: roomId, user: username }) + ` (${selectedLanguage.toUpperCase()})`;
+
+                    // URLを更新
+                    updateURL();
+
+                    // デバッグ情報を表示
+                    console.log(`Joined room: ${roomId} as user: ${username}`);
+                    console.log(`Language Settings - UI: ${selectedLanguage}`);
+                    console.log(`Room users:`, data.users);
 
                     // メッセージ履歴を読み込み
                     await loadMessages();
@@ -381,11 +1124,11 @@
                     connectWebSocket();
 
                 } else {
-                    showStatus('ルームが見つかりません', 'error');
+                    showStatus(t('roomNotFound'), 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showStatus('エラーが発生しました', 'error');
+                showStatus(t('errorOccurred'), 'error');
             }
         }
 
@@ -414,10 +1157,12 @@
         // WebSocket接続
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            websocket = new WebSocket(`${protocol}//${window.location.host}/ws/${currentRoomId}`);
+            websocket = new WebSocket(`${protocol}//${window.location.host}/ws/${currentRoomId}/${encodeURIComponent(currentUsername)}`);
 
             websocket.onmessage = function(event) {
                 const message = JSON.parse(event.data);
+                
+                // 新しい実装では個別配信されるため、フィルタリング不要
                 displayMessage(message);
 
                 // 最新メッセージまでスクロール
@@ -457,25 +1202,26 @@
                     body: JSON.stringify({
                         room_id: currentRoomId,
                         sender: currentUsername,
-                        message: message
+                        message: message,
+                        user_language: selectedLanguage  // 統合された言語を使用
                     })
                 });
 
                 if (response.ok) {
                     messageInput.value = '';
                 } else {
-                    alert('メッセージの送信に失敗しました');
+                    alert(t('sendFailed'));
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('エラーが発生しました');
+                alert(t('errorOccurred'));
             } finally {
                 sendBtn.disabled = false;
-                sendBtn.textContent = '送信';
+                sendBtn.textContent = t('send');
             }
         }
 
-        // メッセージ表示
+        // メッセージ表示（翻訳情報も含む）
         function displayMessage(message) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
@@ -488,15 +1234,69 @@
                 minute: '2-digit'
             });
 
+            // ユーザー識別のためのラベル
+            const userColor = isOwn ? 'transparent' : '#667eea';
+            
+            // ユーザーの言語設定に基づく翻訳を取得
+            let displayedTranslation = message.original; // デフォルトは原文
+            let translationInfo = '';
+            
+            // 新しいメッセージ構造（translations プロパティあり）の場合
+            if (message.translations && typeof message.translations === 'object') {
+                // ユーザーの言語での翻訳があるかチェック
+                if (message.translations[selectedLanguage] && message.original_language !== selectedLanguage) {
+                    displayedTranslation = message.translations[selectedLanguage];
+                    translationInfo = `<div style="font-size: 10px; color: #999; margin-bottom: 3px;">
+                        🔄 ${message.original_language.toUpperCase()} → ${selectedLanguage.toUpperCase()}
+                    </div>`;
+                }
+            }
+            // 旧メッセージ構造（translated プロパティあり）との互換性
+            else if (message.translated && message.original !== message.translated) {
+                displayedTranslation = message.translated;
+                if (message.original_language && message.target_language) {
+                    translationInfo = `<div style="font-size: 10px; color: #999; margin-bottom: 3px;">
+                        🔄 ${message.original_language.toUpperCase()} → ${message.target_language.toUpperCase()}
+                    </div>`;
+                }
+            }
+
+            // 原文と翻訳文の両方を表示するかどうかを判定
+            const showBothTexts = message.original_language !== selectedLanguage && displayedTranslation !== message.original;
+
             messageDiv.innerHTML = `
                 <div class="message-bubble">
-                    <div class="original-text">${escapeHtml(message.original)}</div>
-                    <div class="translated-text">${escapeHtml(message.translated)}</div>
-                    <div class="timestamp">${timestamp} - ${escapeHtml(message.sender)}</div>
+                    <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: ${userColor};">
+                        ${isOwn ? '' : `👤 ${escapeHtml(message.sender)}`}
+                    </div>
+                    ${translationInfo}
+                    ${showBothTexts ? 
+                        `<div class="original-text" style="margin-bottom: 8px;">
+                            <div style="font-size: 12px; color: #888; margin-bottom: 2px;">
+                                📝 ${t('original')} (${message.original_language?.toUpperCase() || 'Unknown'})
+                            </div>
+                            ${escapeHtml(message.original)}
+                        </div>
+                        <div class="translated-text">
+                            <div style="font-size: 12px; color: #888; margin-bottom: 2px;">
+                                🌍 ${t('translated')} (${selectedLanguage.toUpperCase()})
+                            </div>
+                            ${escapeHtml(displayedTranslation)}
+                        </div>` : 
+                        `<div class="original-text">${escapeHtml(message.original)}</div>`
+                    }
+                    <div class="timestamp">${timestamp}</div>
                 </div>
             `;
 
             messagesDiv.appendChild(messageDiv);
+            
+            // デバッグ情報をコンソールに出力
+            console.log(`Message from: ${message.sender}, Current user: ${currentUsername}, isOwn: ${isOwn}`);
+            if (message.translations) {
+                console.log(`Available translations:`, Object.keys(message.translations));
+                console.log(`Original language: ${message.original_language}, User language: ${selectedLanguage}`);
+            }
         }
 
         // ステータス表示
@@ -530,6 +1330,28 @@
         document.getElementById('roomIdInput').addEventListener('input', function(e) {
             e.target.value = e.target.value.toUpperCase();
         });
+
+        // URLを共有するためのボタン機能（オプション）
+        function shareRoomURL() {
+            if (currentRoomId && currentUsername) {
+                const shareURL = `${window.location.origin}/?user=${encodeURIComponent(currentUsername)}&room=${currentRoomId}&lang=${selectedLanguage}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: t('title'),
+                        text: t('roomLabel', { room: currentRoomId, user: currentUsername }),
+                        url: shareURL
+                    });
+                } else {
+                    // フォールバック: クリップボードにコピー
+                    navigator.clipboard.writeText(shareURL).then(() => {
+                        showStatus(t('urlCopied'), 'success');
+                    }).catch(() => {
+                        prompt(t('shareUrl'), shareURL);
+                    });
+                }
+            }
+        }
     </script>
 </body>
 </html> 
