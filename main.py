@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import random
 import string
 from openai import OpenAI
-from langdetect import detect
+
 import aiofiles
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
@@ -152,11 +152,82 @@ def generate_room_id() -> str:
     """6桁の英数字ルームIDを生成"""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
+async def detect_language_ai(text: str) -> str:
+    """AI言語検出"""
+    try:
+        system_prompt = """You are a language detection AI. Analyze the given text and determine its language.
+        
+        Return ONLY the language code in this format:
+        - ja: Japanese
+        - en: English
+        - ko: Korean
+        - zh: Chinese
+        - es: Spanish
+        - fr: French
+        - de: German
+        - ru: Russian
+        - it: Italian
+        - pt: Portuguese
+        - nl: Dutch
+        - ar: Arabic
+        - hi: Hindi
+        - th: Thai
+        - vi: Vietnamese
+        - id: Indonesian
+        - tr: Turkish
+        - pl: Polish
+        - sv: Swedish
+        - no: Norwegian
+        - da: Danish
+        - fi: Finnish
+        - he: Hebrew
+        - fa: Persian
+        - uk: Ukrainian
+        - cs: Czech
+        - hu: Hungarian
+        - bg: Bulgarian
+        - ro: Romanian
+        - hr: Croatian
+        - sk: Slovak
+        - sl: Slovenian
+        - et: Estonian
+        - lv: Latvian
+        - lt: Lithuanian
+        - mt: Maltese
+        - el: Greek
+        
+        If the text contains mixed languages, return the primary language.
+        If you cannot determine the language, return 'en' as default.
+        Return only the language code (e.g., 'ja', 'en', 'ko', etc.), nothing else."""
+        
+        response = openai_client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": text}
+            ],
+            max_tokens=10,
+            temperature=0.1
+        )
+        
+        detected_lang = response.choices[0].message.content.strip().lower()
+        
+        # 有効な言語コードかチェック
+        valid_languages = ['ja', 'en', 'ko', 'zh', 'es', 'fr', 'de', 'ru', 'it', 'pt', 'nl', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'sv', 'no', 'da', 'fi', 'he', 'fa', 'uk', 'cs', 'hu', 'bg', 'ro', 'hr', 'sk', 'sl', 'et', 'lv', 'lt', 'mt', 'el']
+        if detected_lang not in valid_languages:
+            detected_lang = 'en'  # デフォルト
+        
+        return detected_lang
+        
+    except Exception as e:
+        print(f"AI Language detection error: {e}")
+        return 'en'  # エラーの場合は英語をデフォルト
+
 async def translate_text(text: str, user_language: str = 'en') -> tuple[str, str]:
     """テキストの言語を判定して翻訳"""
     try:
-        # 言語判定
-        detected_lang = detect(text)
+        # AI言語判定
+        detected_lang = await detect_language_ai(text)
         
         # 言語コードのマッピング
         language_names = {
@@ -166,7 +237,37 @@ async def translate_text(text: str, user_language: str = 'en') -> tuple[str, str
             'zh': 'Chinese',
             'es': 'Spanish',
             'fr': 'French',
-            'de': 'German'
+            'de': 'German',
+            'ru': 'Russian',
+            'it': 'Italian',
+            'pt': 'Portuguese',
+            'nl': 'Dutch',
+            'ar': 'Arabic',
+            'hi': 'Hindi',
+            'th': 'Thai',
+            'vi': 'Vietnamese',
+            'id': 'Indonesian',
+            'tr': 'Turkish',
+            'pl': 'Polish',
+            'sv': 'Swedish',
+            'no': 'Norwegian',
+            'da': 'Danish',
+            'fi': 'Finnish',
+            'he': 'Hebrew',
+            'fa': 'Persian',
+            'uk': 'Ukrainian',
+            'cs': 'Czech',
+            'hu': 'Hungarian',
+            'bg': 'Bulgarian',
+            'ro': 'Romanian',
+            'hr': 'Croatian',
+            'sk': 'Slovak',
+            'sl': 'Slovenian',
+            'et': 'Estonian',
+            'lv': 'Latvian',
+            'lt': 'Lithuanian',
+            'mt': 'Maltese',
+            'el': 'Greek'
         }
         
         # 翻訳先言語を決定（検出された言語がユーザーの主言語と異なる場合）
@@ -183,7 +284,7 @@ async def translate_text(text: str, user_language: str = 'en') -> tuple[str, str
         
         # OpenAI APIで翻訳
         response = openai_client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text}
@@ -271,7 +372,7 @@ async def send_message(request: MessageRequest):
     room = rooms[request.room_id]
     
     # 送信者の言語を検出
-    detected_lang = detect(request.message)
+    detected_lang = await detect_language_ai(request.message)
     
     # ルーム内の全ユーザーの言語を取得
     user_languages = set(user.language for user in room.users)
@@ -368,6 +469,83 @@ async def read_index():
 async def read_translator():
     return FileResponse('static/translator.html')
 
+class LanguageDetectRequest(BaseModel):
+    text: str
+
+@app.post("/api/detect-language")
+async def detect_language_api(request: LanguageDetectRequest):
+    """AI言語検出APIエンドポイント"""
+    try:
+        # OpenAI APIで言語検出
+        system_prompt = """You are a language detection AI. Analyze the given text and determine its language.
+        
+        Return ONLY the language code in this format:
+        - ja: Japanese
+        - en: English
+        - ko: Korean
+        - zh: Chinese
+        - es: Spanish
+        - fr: French
+        - de: German
+        - ru: Russian
+        - it: Italian
+        - pt: Portuguese
+        - nl: Dutch
+        - ar: Arabic
+        - hi: Hindi
+        - th: Thai
+        - vi: Vietnamese
+        - id: Indonesian
+        - tr: Turkish
+        - pl: Polish
+        - sv: Swedish
+        - no: Norwegian
+        - da: Danish
+        - fi: Finnish
+        - he: Hebrew
+        - fa: Persian
+        - uk: Ukrainian
+        - cs: Czech
+        - hu: Hungarian
+        - bg: Bulgarian
+        - ro: Romanian
+        - hr: Croatian
+        - sk: Slovak
+        - sl: Slovenian
+        - et: Estonian
+        - lv: Latvian
+        - lt: Lithuanian
+        - mt: Maltese
+        - el: Greek
+        
+        If the text contains mixed languages, return the primary language.
+        If you cannot determine the language, return 'en' as default.
+        Return only the language code (e.g., 'ja', 'en', 'ko', etc.), nothing else."""
+        
+        response = openai_client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": request.text}
+            ],
+            max_tokens=10,
+            temperature=0.1
+        )
+        
+        detected_lang = response.choices[0].message.content.strip().lower()
+        
+        # 有効な言語コードかチェック
+        valid_languages = ['ja', 'en', 'ko', 'zh', 'es', 'fr', 'de', 'ru', 'it', 'pt', 'nl', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'sv', 'no', 'da', 'fi', 'he', 'fa', 'uk', 'cs', 'hu', 'bg', 'ro', 'hr', 'sk', 'sl', 'et', 'lv', 'lt', 'mt', 'el']
+        if detected_lang not in valid_languages:
+            detected_lang = 'en'  # デフォルト
+        
+        return {"detected_language": detected_lang}
+        
+    except Exception as e:
+        print(f"Language detection API error: {e}")
+        # エラーの場合は英語をデフォルトとして返す
+        return {"detected_language": "en"}
+
 @app.post("/api/translate")
 async def translate_text_api(request: TranslateRequest):
     """翻訳ツール用のAPIエンドポイント"""
@@ -380,7 +558,37 @@ async def translate_text_api(request: TranslateRequest):
             'zh': 'Chinese',
             'es': 'Spanish',
             'fr': 'French',
-            'de': 'German'
+            'de': 'German',
+            'ru': 'Russian',
+            'it': 'Italian',
+            'pt': 'Portuguese',
+            'nl': 'Dutch',
+            'ar': 'Arabic',
+            'hi': 'Hindi',
+            'th': 'Thai',
+            'vi': 'Vietnamese',
+            'id': 'Indonesian',
+            'tr': 'Turkish',
+            'pl': 'Polish',
+            'sv': 'Swedish',
+            'no': 'Norwegian',
+            'da': 'Danish',
+            'fi': 'Finnish',
+            'he': 'Hebrew',
+            'fa': 'Persian',
+            'uk': 'Ukrainian',
+            'cs': 'Czech',
+            'hu': 'Hungarian',
+            'bg': 'Bulgarian',
+            'ro': 'Romanian',
+            'hr': 'Croatian',
+            'sk': 'Slovak',
+            'sl': 'Slovenian',
+            'et': 'Estonian',
+            'lv': 'Latvian',
+            'lt': 'Lithuanian',
+            'mt': 'Maltese',
+            'el': 'Greek'
         }
         
         source_lang_name = language_names.get(request.source_lang, 'English')
@@ -394,7 +602,7 @@ async def translate_text_api(request: TranslateRequest):
         
         # OpenAI APIで翻訳
         response = openai_client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": request.text}
