@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Dict, List, Optional
+from config import settings
 import json
 import os
 import asyncio
@@ -17,6 +18,10 @@ from contextlib import asynccontextmanager
 
 # .envファイルから環境変数を読み込み
 load_dotenv()
+
+print(settings.OPENAI_API_KEY)
+print(settings.ROOMS_FILE)
+print(settings.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
