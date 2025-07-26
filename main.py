@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from config import settings
@@ -15,6 +16,9 @@ from openai import OpenAI
 import aiofiles
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
+from fastapi import UploadFile, File
+import shutil
+import tempfile
 
 # .envファイルから環境変数を読み込み
 load_dotenv()
@@ -36,6 +40,15 @@ async def lifespan(app: FastAPI):
         pass
 
 app = FastAPI(title="Translation Chat App", version="1.0.0", lifespan=lifespan)
+
+# CORS設定
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 開発環境では全てのオリジンを許可
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # OpenAI クライアント（環境変数から取得）
 api_key = os.getenv("OPENAI_API_KEY")
@@ -627,6 +640,94 @@ async def translate_text_api(request: TranslateRequest):
     except Exception as e:
         print(f"Translation API error: {e}")
         raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
+
+@app.get("/api/test")
+async def test_endpoint():
+    """APIの動作確認用エンドポイント"""
+    # OpenAI APIキーの状態を確認（最初の10文字のみ表示）
+    api_key_status = "Not set"
+    if api_key:
+        api_key_status = f"Set (starts with: {api_key[:10]}...)"
+    
+    return {
+        "status": "ok", 
+        "message": "Backend is running", 
+        "timestamp": datetime.now().isoformat(),
+        "openai_api_key": api_key_status
+    }
+
+@app.post("/api/transcribe/test")
+async def test_transcribe():
+    """音声認識のテスト用エンドポイント（デモ用）"""
+    print("[Test Transcribe] Called")
+    # デモ用のダミーレスポンス
+    return {"transcription": "これはテスト音声認識結果です。This is a test transcription result."}
+
+@app.post("/api/transcribe")
+async def transcribe_audio(audio: UploadFile = File(...)):
+    """音声ファイルをテキストに変換（Whisper API使用）"""
+    print(f"[Transcribe] Received audio file: {audio.filename}")
+    print(f"[Transcribe] Content type: {audio.content_type}")
+    
+    # ファイル内容を読み取る
+    audio_content = await audio.read()
+    audio_size = len(audio_content)
+    print(f"[Transcribe] Audio size: {audio_size} bytes")
+    
+    if audio_size == 0:
+        print("[Transcribe] ERROR: Empty audio file received!")
+        raise HTTPException(status_code=400, detail="Empty audio file")
+    
+    # ファイルポインタを先頭に戻す
+    await audio.seek(0)
+    
+    try:
+        # 一時ファイルに保存
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".m4a") as tmp_file:
+            shutil.copyfileobj(audio.file, tmp_file)
+            tmp_file_path = tmp_file.name
+        
+        print(f"[Transcribe] Saved to temp file: {tmp_file_path}")
+        
+        # ファイルサイズを確認
+        file_size = os.path.getsize(tmp_file_path)
+        print(f"[Transcribe] File size: {file_size} bytes")
+        
+        # デバッグモード（小さいファイルの場合はダミーレスポンスを返す）
+        if file_size < 10000:  # 10KB未満
+            print(f"[Transcribe] DEBUG MODE: File too small ({file_size} bytes), returning dummy response")
+            transcript = "テスト音声認識結果です。(Debug: File was too small)"
+        else:
+            # Whisper APIで音声認識
+            print(f"[Transcribe] Calling Whisper API...")
+            try:
+                with open(tmp_file_path, "rb") as audio_file:
+                    transcript = openai_client.audio.transcriptions.create(
+                        model="whisper-1",
+                        file=audio_file,
+                        response_format="text"
+                    )
+            except Exception as whisper_error:
+                print(f"[Transcribe] Whisper API error: {whisper_error}")
+                # エラーの詳細をログ
+                if hasattr(whisper_error, 'response'):
+                    print(f"[Transcribe] Response status: {whisper_error.response.status_code}")
+                    print(f"[Transcribe] Response body: {whisper_error.response.text}")
+                raise
+        
+        print(f"[Transcribe] Transcription result: {transcript}")
+        
+        # 一時ファイルを削除
+        os.unlink(tmp_file_path)
+        
+        return {"transcription": transcript}
+        
+    except Exception as e:
+        print(f"Transcription error: {e}")
+        # 一時ファイルがあれば削除
+        if 'tmp_file_path' in locals() and os.path.exists(tmp_file_path):
+            os.unlink(tmp_file_path)
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
